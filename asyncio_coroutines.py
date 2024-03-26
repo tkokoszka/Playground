@@ -1,3 +1,5 @@
+"""Playing with basics of asyncio."""
+
 import asyncio
 import logging
 import sys
@@ -5,6 +7,7 @@ from typing import Coroutine, Callable
 
 
 def print_tasks():
+    """Prints names of all tasks."""
     # This function must be executed from within a context that has a running event loop.
     msg = []
     for t in sorted(asyncio.all_tasks(), key=lambda x: x.get_name()):
@@ -20,6 +23,7 @@ async def do_something(i: int):
 
 
 async def with_coroutines():
+    """Create and gather coroutines."""
     logging.info("Start")
     c = []
     for i in range(3):
@@ -35,6 +39,7 @@ async def with_coroutines():
 
 
 async def with_tasks():
+    """Create and gather tasks."""
     logging.info("Start")
     c = []
     for i in range(3):
@@ -50,6 +55,7 @@ async def with_tasks():
 
 
 async def with_tasks_noawait():
+    """Create tasks and do not await for them to complete."""
     logging.info("Start")
     c = []
     for i in range(3):
@@ -64,6 +70,8 @@ async def with_tasks_noawait():
 
 
 async def multiple_calls_to_same_coroutine():
+    """Play with reusing coroutines."""
+
     async def coroutine1(msg: str):
         print(f"--> {msg}")
         await asyncio.sleep(1)
@@ -85,20 +93,6 @@ async def multiple_calls_to_same_coroutine():
     await c3("test3.2")
 
     logging.info("End")
-
-
-async def produce_events():
-    # Produce X values, then notify that production is completed.
-    pass
-
-
-async def consume_events():
-    # Consume X events, expand to consume in batches
-    pass
-
-
-async def producer_consumer():
-    pass
 
 
 if __name__ == '__main__':

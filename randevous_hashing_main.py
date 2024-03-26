@@ -1,3 +1,5 @@
+"""Randevous / circle hashing - generate a hash and assign to right sharding node."""
+
 import hashlib
 from collections import Counter
 from typing import List, Optional
