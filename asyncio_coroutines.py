@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+from typing import Coroutine, Callable
 
 
 def print_tasks():
@@ -55,14 +56,48 @@ async def with_tasks_noawait():
         c.append(asyncio.create_task(do_something(i), name=f"do_something({i})"))
 
     # Tasks are already created and ready to run.
-    # Since this function has lower sleep that scheduled corounties, coroutines will not complete.
+    # Since this function has lower sleep that scheduled corounties, coroutines will not complete before program ends.
     print_tasks()
     logging.info("Sleep")
     await asyncio.sleep(0.5)
     logging.info("End")
 
 
-async def use_condition():
+async def multiple_calls_to_same_coroutine():
+    async def coroutine1(msg: str):
+        print(f"--> {msg}")
+        await asyncio.sleep(1)
+
+    logging.info("Start")
+
+    # Await the same coroutine multiple times.
+    c1 = coroutine1("test1")
+    await c1
+    # await c1  # RuntimeError: cannot reuse already awaited coroutine
+
+    # Unawaited coroutine.
+    # Will not fail, but will print RuntimeWarning: coroutine 'multiple_calls_to_same_coroutine.<locals>.coroutine1' was never awaited
+    # c2 = coroutine1("test2")
+
+    # Type of the async def - it is a callable returning a coroutine.
+    c3: Callable[[str], Coroutine[None, None, None]] = coroutine1
+    await c3("test3.1")
+    await c3("test3.2")
+
+    logging.info("End")
+
+
+async def produce_events():
+    # Produce X values, then notify that production is completed.
+    pass
+
+
+async def consume_events():
+    # Consume X events, expand to consume in batches
+    pass
+
+
+async def producer_consumer():
     pass
 
 
@@ -70,7 +105,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
                         datefmt='%H:%M:%S',
-                        stream=sys.stderr)
+                        stream=sys.stdout)
     # asyncio.run(with_coroutines())
     # asyncio.run(with_tasks())
-    asyncio.run(with_tasks_noawait())
+    # asyncio.run(with_tasks_noawait())
+    asyncio.run(multiple_calls_to_same_coroutine())
