@@ -6,5 +6,9 @@ a short description.
 
 ## Algorithms
 
-1. **[rendezvous_hashing_main.py](algorithms/rendezvous_hashing_main.py)** - a simpler way to achieve similar effect as
-   consistent hashing, see [rendezvous hashing in Wikipedia](https://en.wikipedia.org/wiki/Rendezvous_hashing).
+1. **[rendezvous_hashing_main.py](algorithms/rendezvous_hashing_main.py)** - Rendezvous hashing algo to get consistent
+   hashing, see [rendezvous hashing in Wikipedia](https://en.wikipedia.org/wiki/Rendezvous_hashing).
+
+## Python
+
+1. **[asyncio_coroutines.py](python_asyncio/asyncio_coroutines.py)** - 

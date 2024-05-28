@@ -1,19 +1,45 @@
-"""Playing with basics of asyncio."""
+"""
+Basics of asyncio coroutines.
+* coroutine type annotation
+* ...
+"""
 
 import asyncio
 import logging
 import sys
-from typing import Coroutine, Callable
+from collections.abc import Coroutine, Callable, Awaitable
+from typing import Any
 
 
-def print_tasks():
+def log_tasks():
     """Prints names of all tasks."""
-    # This function must be executed from within a context that has a running event loop.
     msg = []
     for t in sorted(asyncio.all_tasks(), key=lambda x: x.get_name()):
-        is_current = "*" if t == asyncio.current_task() else ""
-        msg.append(f"  task={t.get_name()} {is_current}")
-    logging.info("\n" + "\n".join(msg))
+        indicator = "*" if t == asyncio.current_task() else " "
+        msg.append(f"{indicator}  task={t.get_name()}")
+    logging.info("List of tasks:\n" + "\n".join(msg))
+
+
+async def coroutine_type_annotation():
+    """Explanation of coroutine type annotation."""
+
+    async def coroutine1(name: str) -> str:
+        """Dummy coroutine."""
+        return name
+
+    # Async function (like the one defined above) returns a Coroutine, which in turn is a Generator.
+    # Coroutine type annotation takes 3 arguments: [YieldType, SendType, ReturnType].
+    c1: Coroutine[Any, Any, str] = coroutine1("c1")
+    assert isinstance(c1, Coroutine), "c1 is a Coroutine"
+
+    # All Coroutine instances are also instance of Awaitable. If you do not care about details of Generators, you
+    # can simplify by using Awaitable.
+    c2: Awaitable[str] = coroutine1("c2")
+    assert isinstance(c2, Coroutine), "c2 is a Coroutine"
+    assert isinstance(c2, Coroutine), "c2 is an Awaitable"
+
+    # Let's run coroutine to await warnings.
+    asyncio.gather(c1, c2)
 
 
 async def do_something(i: int):
@@ -30,7 +56,7 @@ async def with_coroutines():
         c.append(do_something(i))
 
     # No tasks at this stage, they will be scheduled in gather.
-    print_tasks()
+    log_tasks()
     logging.info("Sleep")
     await asyncio.sleep(2)
     logging.info("Gather")
@@ -46,7 +72,7 @@ async def with_tasks():
         c.append(asyncio.create_task(do_something(i), name=f"do_something({i})"))
 
     # Tasks are already ready created and ready to run.
-    print_tasks()
+    log_tasks()
     logging.info("Sleep")
     await asyncio.sleep(2)
     logging.info("Gather")
@@ -63,7 +89,7 @@ async def with_tasks_noawait():
 
     # Tasks are already created and ready to run.
     # Since this function has lower sleep that scheduled corounties, coroutines will not complete before program ends.
-    print_tasks()
+    log_tasks()
     logging.info("Sleep")
     await asyncio.sleep(0.5)
     logging.info("End")
@@ -96,11 +122,13 @@ async def multiple_calls_to_same_coroutine():
 
 
 if __name__ == '__main__':
+    # Configure logger to print time, level, python_function_name, message.
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
                         datefmt='%H:%M:%S',
                         stream=sys.stdout)
-    # asyncio.run(with_coroutines())
+    asyncio.run(coroutine_type_annotation())
+    #asyncio.run(with_coroutines())
     # asyncio.run(with_tasks())
     # asyncio.run(with_tasks_noawait())
-    asyncio.run(multiple_calls_to_same_coroutine())
+    #asyncio.run(multiple_calls_to_same_coroutine())
