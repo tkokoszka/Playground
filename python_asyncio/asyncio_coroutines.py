@@ -11,15 +11,6 @@ from collections.abc import Coroutine, Callable, Awaitable
 from typing import Any
 
 
-def log_tasks():
-    """Prints names of all tasks."""
-    msg = []
-    for t in sorted(asyncio.all_tasks(), key=lambda x: x.get_name()):
-        indicator = "*" if t == asyncio.current_task() else " "
-        msg.append(f"{indicator}  task={t.get_name()}")
-    logging.info("List of tasks:\n" + "\n".join(msg))
-
-
 async def coroutine_type_annotation():
     """Explanation of coroutine type annotation."""
 
@@ -29,17 +20,29 @@ async def coroutine_type_annotation():
 
     # Async function (like the one defined above) returns a Coroutine, which in turn is a Generator.
     # Coroutine type annotation takes 3 arguments: [YieldType, SendType, ReturnType].
+    logging.info("Return type of an async def is a Coroutine.")
     c1: Coroutine[Any, Any, str] = coroutine1("c1")
     assert isinstance(c1, Coroutine), "c1 is a Coroutine"
 
     # All Coroutine instances are also instance of Awaitable. If you do not care about details of Generators, you
     # can simplify by using Awaitable.
+    logging.info("Return type of an async def is a Coroutine and Awaitable.")
     c2: Awaitable[str] = coroutine1("c2")
     assert isinstance(c2, Coroutine), "c2 is a Coroutine"
-    assert isinstance(c2, Coroutine), "c2 is an Awaitable"
+    assert isinstance(c2, Awaitable), "c2 is an Awaitable"
 
-    # Let's run coroutine to await warnings.
+    # Let's run coroutine to eliminate "coroutine X was never awaited".
+    logging.info("Await for created coroutines.")
     asyncio.gather(c1, c2)
+
+
+def log_tasks():
+    """Prints names of all tasks."""
+    msg = []
+    for t in sorted(asyncio.all_tasks(), key=lambda x: x.get_name()):
+        indicator = "*" if t == asyncio.current_task() else " "
+        msg.append(f"{indicator}  task={t.get_name()}")
+    logging.info("List of tasks:\n" + "\n".join(msg))
 
 
 async def do_something(i: int):
@@ -122,7 +125,7 @@ async def multiple_calls_to_same_coroutine():
 
 
 if __name__ == '__main__':
-    # Configure logger to print time, level, python_function_name, message.
+    # Configure logger to print python function that did the logging.
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
                         datefmt='%H:%M:%S',
