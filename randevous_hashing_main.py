@@ -1,4 +1,7 @@
-"""Randevous / circle hashing - generate a hash and assign to right sharding node."""
+"""Randevous / circle hashing - generate a hash and assign to right sharding node.
+
+Test to cause conflict.
+"""
 
 import hashlib
 from collections import Counter
