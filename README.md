@@ -1,8 +1,10 @@
 # Playground
 
 Playground repository to experiment and learn about different programming concepts. Each concept is covered in a
-dedicated source file, which has both the implementation and explanation in the comments. All files are listed here with
+dedicated source file, which provides implementation and explanation in the comments. All cases are listed below with
 a short description.
+
+Clone repository, run files, modify to experiment and run again.
 
 ## Algorithms
 
