@@ -1,20 +1,18 @@
-"""Implement producer/consumer with a buffer."""
+"""Producer and consumer with a batch mode.
+
+Producer produces events, consumer consumes in batches: waits for X elements but no longer than Y seconds.
+"""
 
 import asyncio
 import logging
+import sys
 
 
 async def produce_events():
-    # Produce X values, then notify that production is completed.
     pass
 
 
-async def consume_events():
-    # Consume X events, expand to consume in batches
-    pass
-
-
-async def producer_consumer():
+async def consume_events_with_batch():
     pass
 
 
@@ -23,6 +21,7 @@ async def run_machinery():
 
 
 if __name__ == '__main__':
+    # TODO
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
                         datefmt='%H:%M:%S',
