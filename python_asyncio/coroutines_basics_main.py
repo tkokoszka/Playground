@@ -20,13 +20,13 @@ async def coroutine_type_annotation():
 
     # Async function (like the one defined above) returns a Coroutine, which in turn is a Generator.
     # Coroutine type annotation takes 3 arguments: [YieldType, SendType, ReturnType].
-    logging.info("Return type of an async def is a Coroutine.")
+    logging.info("Return type of an 'async def' is a Coroutine.")
     c1: Coroutine[Any, Any, str] = coroutine1("c1")
     assert isinstance(c1, Coroutine), "c1 is a Coroutine"
 
     # All Coroutine instances are also instance of Awaitable. If you do not care about details of Generators, you
     # can simplify by using Awaitable.
-    logging.info("Return type of an async def is a Coroutine and Awaitable.")
+    logging.info("Return type of an 'async def' is a Coroutine and Awaitable.")
     c2: Awaitable[str] = coroutine1("c2")
     assert isinstance(c2, Coroutine), "c2 is a Coroutine"
     assert isinstance(c2, Awaitable), "c2 is an Awaitable"

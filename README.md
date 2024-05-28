@@ -13,5 +13,7 @@ Clone repository, run files, modify to experiment and run again.
 
 ## Python
 
-1. **[asyncio_coroutines.py](python_asyncio/asyncio_coroutines.py)** - basic examples and explanation of asyncio
+1. **[coroutines_basics_main.py](python_asyncio/coroutines_basics_main.py)** - basic examples and explanation of asyncio
    library.
+2. **[producer_consumer_batch_main.py](python_asyncio/producer_consumer_batch_main.py)** - producer and consumer with a
+   batch mode, where consumer consumes in batches: waits for X elements but no longer than Y seconds.
