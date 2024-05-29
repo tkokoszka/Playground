@@ -1,8 +1,10 @@
 """
 Basics of asyncio coroutines.
-* coroutine type annotation
-* coroutine execution - coroutine vs. task, single threaded
-* managing tasks - explicitly creating tasks from coroutines, cancelling, exceptions
+
+Each function defined in this file covers one topic, use Structure/Outline to navigate:
+* coroutine_type_annotation - how to type annotate coroutines and why
+* coroutine_execution - coroutine vs. task, single threaded
+* task_management - explicitly creating tasks from coroutines, cancelling, exceptions
 """
 
 import asyncio
