@@ -54,9 +54,9 @@ async def coroutine_execution():
         run_counter += 1
         return hash(msg)
 
-    logging.info("Creating a coroutine does not run it yet, you need to await.")
-    # Calling 'async def' function creates a coroutine but does not run it. Await on coroutine wraps coroutine into a
-    # task, enables it to be scheduled, and waits in async mode for the coroutine to complete.
+    logging.info("Creating a coroutine does not execute it yet, you need to await.")
+    # Calling 'async def' function creates a coroutine but does not execute it. Await on coroutine wraps coroutine into
+    # a task, enables the task to be scheduled, and waits for the task to complete.
     c1: Awaitable[int] = coroutine1("c1")
     await asyncio.sleep(0)  # yield the current task to give the asyncio scheduler chance to run c1
     assert run_counter == 0, "C1 was not executed"
@@ -70,12 +70,12 @@ async def coroutine_execution():
     except RuntimeError as e:
         logging.info(f"Awaiting the same coroutine multiple time raises '{type(e).__name__}: {e}'")
 
-    logging.info("Tasks are the actual units of work that execute the coroutine.")
-    # Tasks can be created from coroutines and are eligible to be scheduled. One can use this mechanism to schedule
-    # a task, do some work, and await later.
+    logging.info("Tasks are the actual unit of work that executes the coroutine.")
+    # Tasks can be created from coroutines, tasks are immediately eligible to be scheduled. One can use this mechanism
+    # to create a task, do some work, await.
     c2: Awaitable[int] = coroutine1("c2")
-    c2_task = asyncio.create_task(c2)  # c2 is added to the scheduler now
-    await asyncio.sleep(0)  # yield the current task to give scheduler chance to run c2
+    c2_task = asyncio.create_task(c2)  # c2 is added to the scheduler
+    await asyncio.sleep(0)             # yield the current task to give scheduler chance to execute c2
     assert run_counter == 2, "C2 was executed"
     c2_v = await c2_task
     assert c2_v == hash("c2"), "C2 result is as expected"
@@ -90,12 +90,12 @@ async def coroutine_execution():
 
     logging.info("Asyncio module is a single threaded scheduler, "
                  "it can schedule another task only when the current task yields")
-    # New tasks are ready to be scheduled as soon as created, but since the asyncio is single threaded loop, scheduler
-    # will pick up the task only after currently running task yields. Yielding is through await.
+    # Tasks are ready to be scheduled as soon as created, but since the asyncio is single threaded loop, scheduler
+    # picks up pending tasks only after the currently running task yields. Yielding is through await.
     c3_task = asyncio.create_task(coroutine1("c3"))  # c3_task is created and ready to be scheduled.
-    time.sleep(0.5)  # simulate some heavy computation, note that this is not yielding!
+    time.sleep(0.5)  # note that there is no await, so this is not yielding!
     assert run_counter == 2, "C3 was not executed"
-    await asyncio.sleep(0)  # yield the current task to give scheduler chance to run c2
+    await asyncio.sleep(0)  # yield the current task to give scheduler chance to execute c2
     assert run_counter == 3, "C3 was executed"
     c3_v = await c3_task
     assert c3_v == hash("c3"), "C3 result is as expected"
