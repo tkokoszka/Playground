@@ -70,12 +70,12 @@ async def coroutine_execution():
     except RuntimeError as e:
         logging.info(f"Awaiting the same coroutine multiple time raises '{type(e).__name__}: {e}'")
 
-    logging.info("Tasks are the actual unit of work that executes the coroutine.")
-    # Tasks can be created from coroutines, tasks are immediately eligible to be scheduled. One can use this mechanism
+    logging.info("Tasks are the actual units of work that executes the coroutine.")
+    # Tasks can be created from coroutines and are immediately eligible to be scheduled. One can use this mechanism
     # to create a task, do some work, await.
     c2: Awaitable[int] = coroutine1("c2")
     c2_task = asyncio.create_task(c2)  # c2 is added to the scheduler
-    await asyncio.sleep(0)             # yield the current task to give scheduler chance to execute c2
+    await asyncio.sleep(0)  # yield the current task to give scheduler chance to execute c2
     assert run_counter == 2, "C2 was executed"
     c2_v = await c2_task
     assert c2_v == hash("c2"), "C2 result is as expected"
@@ -157,5 +157,5 @@ if __name__ == '__main__':
 
     asyncio.run(coroutine_type_annotation())
     asyncio.run(coroutine_execution())
-    #asyncio.run(with_coroutines())
-    #asyncio.run(with_tasks_noawait())
+    # asyncio.run(with_coroutines())
+    # asyncio.run(with_tasks_noawait())
