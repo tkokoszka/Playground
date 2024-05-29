@@ -7,29 +7,38 @@ Basics of asyncio coroutines.
 import asyncio
 import logging
 import sys
-from collections.abc import Coroutine, Callable, Awaitable
+from collections.abc import Coroutine, Callable, Awaitable, Generator
 from typing import Any
 
 
 async def coroutine_type_annotation():
     """Explanation of coroutine type annotation."""
 
-    async def coroutine1(name: str) -> str:
-        """Dummy coroutine."""
-        return name
+    async def coroutine1(name: str) -> int:
+        """Dummy function, I simply wanted something that has different args and return type."""
+        return hash(name)
 
-    # Async function (like the one defined above) returns a Coroutine, which in turn is a Generator.
-    # Coroutine type annotation takes 3 arguments: [YieldType, SendType, ReturnType].
+    # Async function (like the one defined above) returns a Coroutine, its type annotation takes 3 arguments:
+    #   Coroutine[YieldType, SendType, ReturnType].
+    # Coroutine type annotation is identical to Generator - a generator is a specific type of iterable defined using
+    # yield. However, Coroutine and Generator are distinct types.
     logging.info("Return type of an 'async def' is a Coroutine.")
-    c1: Coroutine[Any, Any, str] = coroutine1("c1")
+    c1: Coroutine[Any, Any, int] = coroutine1("c1")
     assert isinstance(c1, Coroutine), "c1 is a Coroutine"
+    assert not isinstance(c1, Generator), "c1 is not a Generator"
 
-    # All Coroutine instances are also instance of Awaitable. If you do not care about details of Generators, you
-    # can simplify by using Awaitable.
+    # Coroutine instances are also instance of Awaitable. In most cases you do not care about details of Generators and
+    # you can simplify by using Awaitable as type annotation.
     logging.info("Return type of an 'async def' is a Coroutine and Awaitable.")
-    c2: Awaitable[str] = coroutine1("c2")
+    c2: Awaitable[int] = coroutine1("c2")
     assert isinstance(c2, Coroutine), "c2 is a Coroutine"
     assert isinstance(c2, Awaitable), "c2 is an Awaitable"
+
+    # In all the cases above we do not specify arg types because Coroutine does not take arguments. The async
+    # function that returns the coroutine takes arguments, this function is a callable.
+    logging.info("The 'async def' is a Callable.")
+    f_c: Callable[[str], Awaitable[int]] = coroutine1
+    assert isinstance(f_c, Callable), "f_c is a Callable"
 
     # Let's run coroutine to eliminate "coroutine X was never awaited".
     logging.info("Await for created coroutines.")
@@ -125,13 +134,14 @@ async def multiple_calls_to_same_coroutine():
 
 
 if __name__ == '__main__':
-    # Configure logger to print python function that did the logging.
+    # Configure logger to print where the logging happened in the code.
     logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
+                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(filename)s:%(lineno)d|%(funcName)s()|'
+                               '%(message)s',
                         datefmt='%H:%M:%S',
                         stream=sys.stdout)
     asyncio.run(coroutine_type_annotation())
-    #asyncio.run(with_coroutines())
+    # asyncio.run(with_coroutines())
     # asyncio.run(with_tasks())
     # asyncio.run(with_tasks_noawait())
-    #asyncio.run(multiple_calls_to_same_coroutine())
+    # asyncio.run(multiple_calls_to_same_coroutine())
