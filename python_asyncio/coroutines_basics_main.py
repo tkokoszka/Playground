@@ -167,13 +167,15 @@ async def task_management():
     tasks.append(t_longsleep)
 
     logging.info(f"Created {len(tasks)} tasks:\n{task_list_pretty_print(tasks)}")
-    # Until tasks are scheduled, nothing happens.
+    # Until tasks are scheduled, they do not execute.
     assert not t_cancel.done() and not t_cancel.cancelled()
     assert not t_exception.done()
     assert not t_longsleep.done()
 
-    await asyncio.sleep(0)
-    # Now all tasks had a chance to be executed, let's see what happened.
+    await asyncio.sleep(0)  # Yield to give scheduler a chance to execute other tasks.
+
+    # Tasks had a chance to be executed, the no-op tasks that do not have await inside them are done now (i.e. tasks
+    # that did not yield, see coroutine_noop).
     logging.info(f"After yielding once, list is as following:\n{task_list_pretty_print(tasks)}")
     assert t_cancel.done() and t_cancel.cancelled()
     assert t_exception.done() and t_exception.exception() is not None
