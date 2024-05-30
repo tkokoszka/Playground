@@ -12,8 +12,8 @@ import logging
 import sys
 import time
 from collections.abc import Coroutine, Callable, Awaitable, Generator
-from typing import Any, List
 from enum import Enum
+from typing import Any, List
 
 
 async def coroutine_type_annotation():
@@ -23,24 +23,24 @@ async def coroutine_type_annotation():
         """Dummy function, I simply wanted something that has different args and return type."""
         return hash(name)
 
-    # Async function (like the one defined above) returns a Coroutine, its type annotation takes 3 arguments:
-    #   Coroutine[YieldType, SendType, ReturnType].
-    # Coroutine type annotation is identical to Generator - a generator is a specific type of iterable defined using
-    # yield. However, Coroutine and Generator are distinct types.
+    # Async function (like the one defined above) returns a Coroutine, its type annotation takes
+    # 3 arguments: Coroutine[YieldType, SendType, ReturnType].
+    # Coroutine type annotation is identical to Generator - a generator is a specific type of
+    # iterable defined using yield. However, Coroutine and Generator are distinct types.
     logging.info("Return type of an 'async def' is a Coroutine.")
     c1: Coroutine[Any, Any, int] = coroutine1("c1")
     assert isinstance(c1, Coroutine), "c1 is a Coroutine"
     assert not isinstance(c1, Generator), "c1 is not a Generator"
 
-    # Coroutine instances are also instance of Awaitable. In most cases you do not care about details of Generators and
-    # you can simplify by using Awaitable as type annotation.
+    # Coroutine instances are also instance of Awaitable. In most cases you do not care about
+    # details of Generators and you can simplify by using Awaitable as type annotation.
     logging.info("Return type of an 'async def' is a Coroutine and Awaitable.")
     c2: Awaitable[int] = coroutine1("c2")
     assert isinstance(c2, Coroutine), "c2 is a Coroutine"
     assert isinstance(c2, Awaitable), "c2 is an Awaitable"
 
-    # In all the cases above we do not specify arg types because Coroutine does not take arguments. The async
-    # function that returns the coroutine takes arguments, this function is a callable.
+    # In all the cases above we do not specify arg types because Coroutine does not take arguments.
+    # The async function that returns the coroutine takes arguments, this function is a callable.
     logging.info("The 'async def' is a Callable.")
     f_c: Callable[[str], Awaitable[int]] = coroutine1
     assert isinstance(f_c, Callable), "f_c is a Callable"
@@ -59,8 +59,9 @@ async def coroutine_execution():
         return hash(msg)
 
     logging.info("Creating a coroutine does not execute it yet, you need to await.")
-    # Calling 'async def' function creates a coroutine but does not execute it. Await on coroutine wraps coroutine into
-    # a task, enables the task to be scheduled, and waits for the task to complete.
+    # Calling 'async def' function creates a coroutine but does not execute it.
+    # Await on coroutine wraps coroutine into a task, enables the task to be scheduled, and waits
+    # for the task to complete.
     c1: Awaitable[int] = coroutine1("c1")
     await asyncio.sleep(0)  # yield the current task to give the asyncio scheduler chance to run c1
     assert run_counter == 0, "C1 was not executed"
@@ -72,11 +73,12 @@ async def coroutine_execution():
         _ = await c1
         assert False, "Awaiting C1 again fails"
     except RuntimeError as e:
-        logging.info(f"Awaiting the same coroutine multiple time raises '{type(e).__name__}: {e}'")
+        logging.info("Awaiting the same coroutine multiple time raises '%s: %s'",
+                     type(e).__name__, e)
 
     logging.info("Tasks are the actual units of work that executes the coroutine.")
-    # Tasks can be created from coroutines and are immediately eligible to be scheduled. One can use this mechanism
-    # to create a task, do some work, await.
+    # Tasks can be created from coroutines and are immediately eligible to be scheduled. One can use
+    # this mechanism to create a task, do some work, await.
     c2: Awaitable[int] = coroutine1("c2")
     c2_task = asyncio.create_task(c2)  # c2 is added to the scheduler
     await asyncio.sleep(0)  # yield the current task to give scheduler chance to execute c2
@@ -89,13 +91,14 @@ async def coroutine_execution():
         _ = await c2_task2
         assert False, "Awaiting C2 again fails"
     except RuntimeError:
-        logging.info("Await the same coroutine multiple times fails, even when wrapped in separate tasks")
-        pass
+        logging.info("Await the same coroutine multiple times fails, even when wrapped in"
+                     " separate tasks")
 
     logging.info("Asyncio module is a single threaded scheduler, "
                  "it can schedule another task only when the current task yields")
-    # Tasks are ready to be scheduled as soon as created, but since the asyncio is single threaded loop, scheduler
-    # picks up pending tasks only after the currently running task yields. Yielding is through await.
+    # Tasks are ready to be scheduled as soon as created, but since the asyncio is single
+    # threaded loop, scheduler picks up pending tasks only after the currently running task
+    # yields. Yielding is through await.
     c3_task = asyncio.create_task(coroutine1("c3"))  # c3_task is created and ready to be scheduled.
     time.sleep(0.5)  # note that there is no await, so this is not yielding!
     assert run_counter == 2, "C3 was not executed"
@@ -106,6 +109,7 @@ async def coroutine_execution():
 
 
 async def task_management():
+    """Examples how to create and manage tasks."""
 
     async def coroutine_noop():
         pass
@@ -117,9 +121,9 @@ async def task_management():
         await asyncio.sleep(asleep_secs)
 
     def task_list_pretty_print(tasks: List[asyncio.Task]) -> str:
-
         def execution_status(t: asyncio.Task[Any]):
             class Status(Enum):
+                """Execution status."""
                 EXCEPTION = "EXCEPTION"
                 CANCELLED = "CANCELLED"
                 DONE = "DONE"
@@ -138,7 +142,7 @@ async def task_management():
                     status = Status.DONE
             else:
                 status = Status.ACTIVE
-            width = max([len(m.short_name) for m in Status.__members__.values()])
+            width = max(len(m.short_name) for m in Status.__members__.values())
             return status.short_name.center(width)
 
         result: List[str] = []
@@ -146,8 +150,8 @@ async def task_management():
             result.append(f"  [{execution_status(t)}], name={t.get_name()}")
         return '\n'.join(result)
 
-    # Task is a wrapper around a coroutine that schedules its execution and allows it to run concurrently with other
-    # tasks, managing its lifecycle and state.
+    # Task is a wrapper around a coroutine that schedules its execution and allows it to run
+    # concurrently with other tasks, managing its lifecycle and state.
     # Each task has a name, which by default is 'Task-{n}'.
 
     logging.info("Creating bunch of tasks and forcing them to different states.")
@@ -168,7 +172,7 @@ async def task_management():
     t_longsleep = asyncio.create_task(coroutine_asleep(60), name="LongAsleep")
     tasks.append(t_longsleep)
 
-    logging.info(f"Created {len(tasks)} tasks:\n{task_list_pretty_print(tasks)}")
+    logging.info("Created %d tasks:\n%s", len(tasks), task_list_pretty_print(tasks))
     # Until tasks are scheduled, they do not execute.
     assert not t_cancel.done() and not t_cancel.cancelled()
     assert not t_exception.done()
@@ -176,9 +180,9 @@ async def task_management():
 
     await asyncio.sleep(0)  # Yield to give scheduler a chance to execute other tasks.
 
-    # Tasks had a chance to be executed, the no-op tasks that do not have await inside them are done now (i.e. tasks
-    # that did not yield, see coroutine_noop).
-    logging.info(f"After yielding once, list is as following:\n{task_list_pretty_print(tasks)}")
+    # Tasks had a chance to be executed, the no-op tasks that do not have await inside them are done
+    # now (i.e. tasks that did not yield, see coroutine_noop).
+    logging.info("After yielding once, list is as following:\n%s", task_list_pretty_print(tasks))
     assert t_cancel.done() and t_cancel.cancelled()
     assert t_exception.done() and t_exception.exception() is not None
 
@@ -186,17 +190,18 @@ async def task_management():
         await t_cancel
         assert False
     except asyncio.exceptions.CancelledError as e:
-        logging.info(f"Trying to await on cancelled tasks raises '{type(e).__name__}'.")
+        logging.info("Trying to await on cancelled tasks raises '%s'.", type(e).__name__)
 
-    logging.info("Program might finish before all tasks are completed, this is fine, will not raise warnings.")
+    logging.info("Program might finish before all tasks are completed,"
+                 " this is fine, will not raise warnings.")
     assert not t_longsleep.done()
 
 
 if __name__ == '__main__':
     # Configure logger to print where the logging happened in the code.
     logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(filename)s:%(lineno)d|%(funcName)s()|'
-                               '%(message)s',
+                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(filename)s:%(lineno)d'
+                               '|%(funcName)s()|%(message)s',
                         datefmt='%H:%M:%S',
                         stream=sys.stdout)
 

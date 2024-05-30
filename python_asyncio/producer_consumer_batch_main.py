@@ -1,6 +1,7 @@
 """Producer and consumer with a batch mode.
 
-Producer produces events, consumer consumes in batches: waits for X elements but no longer than Y seconds.
+Producer produces events, consumer consumes in batches: waits for X elements but no longer than
+Y seconds.
 """
 
 import asyncio
@@ -9,15 +10,15 @@ import sys
 
 
 async def produce_events():
-    pass
+    """Produce events."""
 
 
 async def consume_events_with_batch():
-    pass
+    """Consume events in batches."""
 
 
-async def run_machinery():
-    pass
+async def simulate():
+    """Run the simulation."""
 
 
 if __name__ == '__main__':
@@ -26,4 +27,4 @@ if __name__ == '__main__':
                         format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
                         datefmt='%H:%M:%S',
                         stream=sys.stdout)
-    asyncio.run(run_machinery())
+    asyncio.run(simulate())

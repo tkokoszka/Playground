@@ -2,12 +2,13 @@
 Example of using Rendezvous hashing to assign keys to nodes for consistent hashing.
 See https://en.wikipedia.org/wiki/Rendezvous_hashing
 
-Implements rendezvous_hashing and runs with K nodes for various number of samples, then prints stats.
+Implements rendezvous_hashing and runs with K nodes for various number of samples, then prints
+stats.
 """
 
 import hashlib
 from collections import Counter
-from typing import List, Optional, Callable, Any
+from typing import List, Optional
 
 
 def hash_function(key_id: str, node_id: str) -> int:
@@ -32,7 +33,9 @@ def rendezvous_hashing(key_id: str, node_ids: List[str]) -> str:
     return assigned_node
 
 
-def run_statistics(node_ids: List[str], num_samples: int):
+def simulate(node_ids: List[str], num_samples: int):
+    """Runs simulation with given num_samples and prints statistics."""
+
     # Generate hashes for given number of samples:
     nodes_counts = Counter(node_ids)
     for i in range(0, num_samples):
@@ -40,12 +43,12 @@ def run_statistics(node_ids: List[str], num_samples: int):
         nodes_counts[assigned_node] += 1
 
     # Collect and print statistics:
-    total = nodes_counts.total()
     expected = num_samples / len(node_ids)
-    max_dist = max([count for _, count in nodes_counts.items()])
-    min_dist = min([count for _, count in nodes_counts.items()])
+    max_dist = max(count for _, count in nodes_counts.items())
+    min_dist = min(count for _, count in nodes_counts.items())
 
-    def diff_percent(observer: int, expected: int): return round(100 * (observer - expected) / expected, 2)
+    def diff_percent(observer: int, expected: int):
+        return round(100 * (observer - expected) / expected, 2)
 
     print(f"Distribution by node for {len(node_ids)} nodes, {num_samples} samples:")
     print(
@@ -57,7 +60,7 @@ def run_statistics(node_ids: List[str], num_samples: int):
 
 if __name__ == '__main__':
     nodes = ['Node1', 'Node2', 'Node3', 'Node4']
-    run_statistics(nodes, 100)
-    run_statistics(nodes, 1_000)
-    run_statistics(nodes, 10_000)
-    run_statistics(nodes, 100_000)
+    simulate(nodes, 100)
+    simulate(nodes, 1_000)
+    simulate(nodes, 10_000)
+    simulate(nodes, 100_000)
