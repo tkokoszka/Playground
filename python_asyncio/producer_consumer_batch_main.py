@@ -21,10 +21,12 @@ async def simulate():
     """Run the simulation."""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Configure logger to print python function that did the logging.
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s',
-                        datefmt='%H:%M:%S',
-                        stream=sys.stdout)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s.%(msecs)03d|%(levelname)s|%(funcName)s|%(message)s",
+        datefmt="%H:%M:%S",
+        stream=sys.stdout,
+    )
     asyncio.run(simulate())

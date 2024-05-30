@@ -73,8 +73,11 @@ async def coroutine_execution():
         _ = await c1
         assert False, "Awaiting C1 again fails"
     except RuntimeError as e:
-        logging.info("Awaiting the same coroutine multiple time raises '%s: %s'",
-                     type(e).__name__, e)
+        logging.info(
+            "Awaiting the same coroutine multiple time raises '%s: %s'",
+            type(e).__name__,
+            e,
+        )
 
     logging.info("Tasks are the actual units of work that executes the coroutine.")
     # Tasks can be created from coroutines and are immediately eligible to be scheduled. One can use
@@ -124,6 +127,7 @@ async def task_management():
         def execution_status(t: asyncio.Task[Any]):
             class Status(Enum):
                 """Execution status."""
+
                 EXCEPTION = "EXCEPTION"
                 CANCELLED = "CANCELLED"
                 DONE = "DONE"
@@ -148,7 +152,7 @@ async def task_management():
         result: List[str] = []
         for t in sorted(tasks, key=lambda x: x.get_name()):
             result.append(f"  [{execution_status(t)}], name={t.get_name()}")
-        return '\n'.join(result)
+        return "\n".join(result)
 
     # Task is a wrapper around a coroutine that schedules its execution and allows it to run
     # concurrently with other tasks, managing its lifecycle and state.
@@ -197,13 +201,15 @@ async def task_management():
     assert not t_longsleep.done()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Configure logger to print where the logging happened in the code.
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s.%(msecs)03d|%(levelname)s|%(filename)s:%(lineno)d'
-                               '|%(funcName)s()|%(message)s',
-                        datefmt='%H:%M:%S',
-                        stream=sys.stdout)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s.%(msecs)03d|%(levelname)s|%(filename)s:%(lineno)d"
+        "|%(funcName)s()|%(message)s",
+        datefmt="%H:%M:%S",
+        stream=sys.stdout,
+    )
 
     asyncio.run(coroutine_type_annotation())
     asyncio.run(coroutine_execution())
