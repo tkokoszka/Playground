@@ -25,5 +25,6 @@ function RunOrDie {
 # PowerShell insterprets arguments starting with - (dash) as a switch and does not pass it to the catch it all
 # param (ValueFromRemainingArguments). The only way around I found is to wrap those in quotes.
 RunOrDie pylint "-v" **/*.py
+RunOrDie pre-commit run "--all-files"
 
 Write-Output "All checks completed."
