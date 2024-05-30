@@ -1,6 +1,6 @@
-# PowerShell 7 script to runs checks on the code.
-# Execute before doing commit or creating Pull Request, from the project directory, e.g.
-# $ script\presubmit.ps1
+# PowerShell 7 script to runs pre-commit checks.
+# Meant for manual usage. Execute before doing commit or creating Pull Request, from the project directory, e.g.:
+# $ script\pre-commit.ps1
 
 # Check if running from proper directory location.
 if (-not (Test-Path -Path 'scripts' -PathType Container)) {
@@ -24,7 +24,6 @@ function RunOrDie {
 
 # PowerShell insterprets arguments starting with - (dash) as a switch and does not pass it to the catch it all
 # param (ValueFromRemainingArguments). The only way around I found is to wrap those in quotes.
-RunOrDie pylint "-v" **/*.py
 RunOrDie pre-commit run "--all-files"
 
-Write-Output "All checks completed."
+Write-Output "All pre-commit checks completed."
