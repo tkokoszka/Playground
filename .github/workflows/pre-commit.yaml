@@ -32,3 +32,13 @@ jobs:
 
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
+
+      # Run programs as a mean of testing.
+
+      - name: Run programs in algorithms
+        run: python algorithms/rendezvous_hashing_main.py
+
+      - name: Run programs in python_asyncio
+        run: |
+          python python_asyncio/coroutines_basics_main.py
+          python python_asyncio/producer_consumer_batch_main.py
