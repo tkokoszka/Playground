@@ -2,8 +2,8 @@
 Example of using Rendezvous hashing to assign keys to nodes for consistent hashing.
 See https://en.wikipedia.org/wiki/Rendezvous_hashing
 
-Implements rendezvous_hashing and runs with K nodes for various number of samples, then prints
-stats.
+Implements rendezvous_hashing and runs with K nodes for various number of samples, then
+prints stats.
 """
 
 import hashlib
